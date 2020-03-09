@@ -6,8 +6,10 @@ using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Azure.Storage.RetryPolicies;
 
 namespace log4net.Azure.Storage
 {
@@ -49,6 +51,16 @@ namespace log4net.Azure.Storage
             try
             {
                 var blob = container.GetAppendBlobReference(Path.Combine(DirectoryName, FileName));
+                try
+                {
+                    blob.CreateOrReplace(
+                        AccessCondition.GenerateIfNotExistsCondition(),
+                        new BlobRequestOptions() { RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(1), 10) },
+                        null);
+                }
+                catch (StorageException ex) when (ex.RequestInformation?.HttpStatusCode == (int)HttpStatusCode.Conflict)
+                { }
+
                 var message = loggingEvent.GetFormattedString(Layout);
                 blob.AppendText(message, Encoding.UTF8);
             }
