@@ -8,12 +8,12 @@ Currently available logging destination is **Blob Storage** as an **AppendBlob**
 
 ### Config example
 
-```
+```xml
 <appender name="GeneralFileAppender" type="log4net.Azure.Storage.AzureBlobAppender, log4net.Azure.Storage">
     <BufferSize value="0" />
     <ContainerName value="logs"/>
-    <DirectoryName value="rsl-fws"/>
-    <FileName type="log4net.Util.PatternString" value="log_{yyyyMMdd}.log" />
+    <DirectoryName value="test-app"/>
+    <FileName type="log4net.Util.PatternString" value="log_%date{yyyyMMdd}.log" />
 
     <!-- You can either specify a connection string or use the ConnectionStringName property instead -->
 
@@ -29,4 +29,3 @@ Currently available logging destination is **Blob Storage** as an **AppendBlob**
     </layout>
 </appender>
 ```
-
